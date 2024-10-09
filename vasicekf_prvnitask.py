@@ -38,6 +38,7 @@ registrovani_uzivatele = {
     "mike": "password123",
     "liz": "pass123"
 }
+
 def login():
     username = input("username: ")
     password = input("password: ")
@@ -48,14 +49,15 @@ def login():
     else:
         print("unregistered user, terminating the program..")
         return False
+
 def select_text():
     print("----------------------------------------")
-    print("We have 3 texts to be analyzed.")
+    print(f"We have {len(TEXTS)} texts to be analyzed.")
     print("----------------------------------------")
     
     try:
-        choice = int(input("Enter a number btw. 1 and 3 to select: "))
-        if choice not in [1, 2, 3]:
+        choice = int(input(f"Enter a number btw. 1 and {len(TEXTS)} to select: "))
+        if choice not in range(1, len(TEXTS) + 1):
             print("Invalid selection, terminating the program..")
             return None
         return TEXTS[choice - 1]
@@ -63,11 +65,14 @@ def select_text():
         print("Invalid input, terminating the program..")
         return None
 
+def clean_word(word):
+    return word.strip(",.?!:")
+
 def analyze_text(text):
-    words = text.split()
+    words = [clean_word(word) for word in text.split()]
     word_count = len(words)
     titlecase_count = sum(1 for word in words if word.istitle())
-    uppercase_count = sum(1 for word in words if word.isupper())
+    uppercase_count = sum(1 for word in words if word.isupper() and word.isalpha())
     lowercase_count = sum(1 for word in words if word.islower())
     numeric_count = sum(1 for word in words if word.isdigit())
     numeric_sum = sum(int(word) for word in words if word.isdigit())
@@ -83,13 +88,13 @@ def analyze_text(text):
     
     word_lengths = {}
     for word in words:
-        word_length = len(word.strip(",."))
+        word_length = len(clean_word(word))
         if word_length in word_lengths:
             word_lengths[word_length] += 1
         else:
             word_lengths[word_length] = 1
 
-    print("LEN|  OCCURENCES  |NR.")
+    print("LEN|  OCCURRENCES  |NR.")
     print("----------------------------------------")
     for length in sorted(word_lengths):
         print(f"{length:>3}|{'*' * word_lengths[length]:<12}|{word_lengths[length]}")
